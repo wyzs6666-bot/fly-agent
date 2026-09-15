@@ -13,12 +13,15 @@ if "input_text" not in st.session_state:
     st.session_state.input_text = ""
 if "fly_state" not in st.session_state:
     st.session_state.fly_state = "idle"
+if "fly_nonce" not in st.session_state:
+    st.session_state.fly_nonce = 0
 if "last_result" not in st.session_state:
     st.session_state.last_result = None
 if "last_error" not in st.session_state:
     st.session_state.last_error = None
 
 fly_state = st.session_state.fly_state
+nonce = st.session_state.fly_nonce
 
 st.markdown(
     f"""
@@ -26,79 +29,138 @@ st.markdown(
 .sky {{
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  height: 140px;
-  margin: 0 0 8px;
+  align-items: center;
+  height: 240px;
+  margin: 0 0 4px;
+  overflow: visible;
 }}
 .fly {{
-  width: 78px;
-  height: 78px;
+  width: 160px;
+  height: 160px;
   position: relative;
+  filter: drop-shadow(0 10px 12px rgba(0,0,0,.18));
 }}
-.body {{
-  width: 24px; height: 34px;
-  background: #2c3e50;
-  border-radius: 50% 50% 40% 40%;
-  position: absolute; left: 27px; top: 22px; z-index: 2;
+.fly .ab {{
+  width: 36px; height: 58px;
+  background: radial-gradient(circle at 30% 20%, #3d4f5f, #1b242c 70%);
+  border-radius: 40% 40% 48% 48%;
+  position: absolute; left: 62px; top: 62px; z-index: 2;
+  box-shadow: inset 0 -8px 0 rgba(0,0,0,.15);
 }}
-.head {{
-  width: 20px; height: 20px;
-  background: #1a252f; border-radius: 50%;
-  position: absolute; left: 29px; top: 6px; z-index: 3;
+.fly .ab::after {{
+  content: "";
+  position: absolute; left: 6px; right: 6px; top: 16px;
+  height: 28px;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 6px,
+    rgba(0,0,0,.22) 6px 8px
+  );
 }}
-.eye {{
-  width: 6px; height: 6px;
-  background: #5ab0ff; border-radius: 50%;
-  position: absolute; top: 6px;
+.fly .th {{
+  width: 28px; height: 24px;
+  background: #24303a;
+  border-radius: 50%;
+  position: absolute; left: 66px; top: 50px; z-index: 3;
 }}
-.eye.left {{ left: 2px; }}
-.eye.right {{ right: 2px; }}
-.wing {{
-  width: 32px; height: 16px;
-  background: rgba(255,255,255,.8);
-  border: 1px solid #bbb; border-radius: 50%;
-  position: absolute; top: 18px; z-index: 1;
+.fly .hd {{
+  width: 30px; height: 26px;
+  background: #141b21;
+  border-radius: 50%;
+  position: absolute; left: 65px; top: 30px; z-index: 4;
 }}
-.wing.left {{ left: 6px; transform: rotate(-15deg); transform-origin: right center; }}
-.wing.right {{ right: 6px; transform: rotate(15deg); transform-origin: left center; }}
-.fly.idle .wing.left {{ animation: flapL .28s infinite alternate ease-in-out; }}
-.fly.idle .wing.right {{ animation: flapR .28s infinite alternate ease-in-out; }}
-.fly.escape {{ animation: escapeFly 1.25s forwards; }}
-.fly.escape .wing.left,
-.fly.escape .wing.right {{ animation: flapFast .08s infinite alternate; }}
-.fly.approach {{ animation: approach 1s forwards; }}
-.fly.explore {{ animation: explore 1.6s infinite; }}
-.fly.noop {{ animation: shake .4s ease; }}
-@keyframes flapL {{ from {{ transform: rotate(-22deg); }} to {{ transform: rotate(8deg); }} }}
-@keyframes flapR {{ from {{ transform: rotate(22deg); }} to {{ transform: rotate(-8deg); }} }}
-@keyframes flapFast {{ from {{ transform: rotate(-28deg); }} to {{ transform: rotate(22deg); }} }}
-@keyframes escapeFly {{
-  0% {{ transform: translate(0,0) rotate(0); opacity: 1; }}
-  100% {{ transform: translate(160px,-90px) rotate(40deg); opacity: 0; }}
+.fly .eye {{
+  width: 11px; height: 11px;
+  background: radial-gradient(circle at 35% 30%, #8fd3ff, #2f7fe0 45%, #0b2a4a);
+  border-radius: 50%;
+  position: absolute; top: 7px;
+}}
+.fly .eye.l {{ left: 3px; }}
+.fly .eye.r {{ right: 3px; }}
+.fly .wing {{
+  width: 64px; height: 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(210,230,240,.18));
+  border: 1px solid rgba(160,180,190,.7);
+  border-radius: 70% 70% 50% 50%;
+  position: absolute; top: 48px; z-index: 1;
+}}
+.fly .wing.l {{ left: 12px; transform-origin: 58px 18px; transform: rotate(-18deg); }}
+.fly .wing.r {{ right: 12px; transform-origin: 6px 18px; transform: rotate(18deg); }}
+.fly .leg {{
+  position: absolute; width: 2px; height: 16px;
+  background: #1a2228; z-index: 2; border-radius: 1px;
+}}
+.fly .leg.l1 {{ left: 64px; top: 72px; transform: rotate(25deg); }}
+.fly .leg.l2 {{ left: 62px; top: 84px; transform: rotate(12deg); }}
+.fly .leg.l3 {{ left: 64px; top: 96px; transform: rotate(-8deg); }}
+.fly .leg.r1 {{ right: 64px; top: 72px; transform: rotate(-25deg); }}
+.fly .leg.r2 {{ right: 62px; top: 84px; transform: rotate(-12deg); }}
+.fly .leg.r3 {{ right: 64px; top: 96px; transform: rotate(8deg); }}
+
+.fly.idle {{ animation: hover 1.8s ease-in-out infinite; }}
+.fly.idle .wing.l {{ animation: flapL .16s infinite alternate ease-in-out; }}
+.fly.idle .wing.r {{ animation: flapR .16s infinite alternate ease-in-out; }}
+.fly.escape {{ animation: escape 1.35s cubic-bezier(.2,.7,.2,1) forwards; }}
+.fly.escape .wing.l,
+.fly.escape .wing.r {{ animation: flapFast .07s infinite alternate; }}
+.fly.approach {{ animation: approach 1.1s ease forwards; }}
+.fly.approach .wing.l {{ animation: flapL .22s infinite alternate; }}
+.fly.approach .wing.r {{ animation: flapR .22s infinite alternate; }}
+.fly.explore {{ animation: explore 2.2s ease-in-out infinite; }}
+.fly.explore .wing.l {{ animation: flapL .14s infinite alternate; }}
+.fly.explore .wing.r {{ animation: flapR .14s infinite alternate; }}
+.fly.noop {{ animation: recoil .55s ease; }}
+
+@keyframes hover {{
+  0%,100% {{ transform: translate(0,0) rotate(-2deg); }}
+  50% {{ transform: translate(4px,-10px) rotate(2deg); }}
+}}
+@keyframes flapL {{
+  from {{ transform: rotate(-28deg); }}
+  to {{ transform: rotate(8deg); }}
+}}
+@keyframes flapR {{
+  from {{ transform: rotate(28deg); }}
+  to {{ transform: rotate(-8deg); }}
+}}
+@keyframes flapFast {{
+  from {{ transform: rotate(-38deg); }}
+  to {{ transform: rotate(20deg); }}
+}}
+@keyframes escape {{
+  0% {{ transform: translate(0,0) rotate(0) scale(1); opacity: 1; }}
+  25% {{ transform: translate(-28px,-36px) rotate(-28deg) scale(1.05); }}
+  100% {{ transform: translate(220px,-160px) rotate(48deg) scale(.7); opacity: 0; }}
 }}
 @keyframes approach {{
-  0% {{ transform: translate(0,0) scale(1); }}
-  100% {{ transform: translate(0,16px) scale(1.18); }}
+  0% {{ transform: translate(0,0) scale(1) rotate(0); }}
+  40% {{ transform: translate(0,18px) scale(1.12) rotate(-6deg); }}
+  100% {{ transform: translate(0,48px) scale(1.38) rotate(4deg); }}
 }}
 @keyframes explore {{
-  0%,100% {{ transform: translate(0,0); }}
-  25% {{ transform: translate(-14px,-8px) rotate(-8deg); }}
-  75% {{ transform: translate(14px,-6px) rotate(8deg); }}
+  0%,100% {{ transform: translate(0,0) rotate(0); }}
+  20% {{ transform: translate(-28px,-16px) rotate(-14deg); }}
+  50% {{ transform: translate(6px,-28px) rotate(6deg); }}
+  80% {{ transform: translate(30px,-10px) rotate(12deg); }}
 }}
-@keyframes shake {{
-  0%,100% {{ transform: translateX(0); }}
-  30% {{ transform: translateX(-7px); }}
-  60% {{ transform: translateX(7px); }}
+@keyframes recoil {{
+  0% {{ transform: translate(0,0); }}
+  20% {{ transform: translate(-14px,8px) rotate(-12deg); }}
+  55% {{ transform: translate(10px,-4px) rotate(8deg); }}
+  100% {{ transform: translate(0,0); }}
 }}
 </style>
 <div class="sky">
-  <div class="fly {fly_state}">
-    <div class="wing left"></div>
-    <div class="wing right"></div>
-    <div class="body"></div>
-    <div class="head">
-      <div class="eye left"></div>
-      <div class="eye right"></div>
+  <div class="fly {fly_state}" data-n="{nonce}">
+    <div class="wing l"></div>
+    <div class="wing r"></div>
+    <div class="leg l1"></div><div class="leg l2"></div><div class="leg l3"></div>
+    <div class="leg r1"></div><div class="leg r2"></div><div class="leg r3"></div>
+    <div class="ab"></div>
+    <div class="th"></div>
+    <div class="hd">
+      <div class="eye l"></div>
+      <div class="eye r"></div>
     </div>
   </div>
 </div>
@@ -152,7 +214,7 @@ for i, ex in enumerate(examples):
         st.rerun()
 
 def pick_fly_state(data, raw):
-    sense = data.get("sense", "nothing")
+    sense = str(data.get("sense", "nothing"))
     actions = data.get("actions", []) or []
     felt = str(data.get("felt", ""))
     if sense == "threat" or "jumped" in str(actions) or "危险" in felt or "手" in raw:
@@ -180,16 +242,19 @@ if st.button("运行", type="primary", use_container_width=True) and st.session_
                 st.session_state.last_result = data
                 st.session_state.last_error = None
                 st.session_state.fly_state = pick_fly_state(data, st.session_state.input_text)
+                st.session_state.fly_nonce += 1
                 st.rerun()
             except json.JSONDecodeError:
                 st.session_state.last_result = None
                 st.session_state.last_error = output
                 st.session_state.fly_state = "noop"
+                st.session_state.fly_nonce += 1
                 st.rerun()
         except Exception as e:
             st.session_state.last_result = None
             st.session_state.last_error = f"运行失败：{e}"
             st.session_state.fly_state = "noop"
+            st.session_state.fly_nonce += 1
             st.rerun()
 
 data = st.session_state.last_result
