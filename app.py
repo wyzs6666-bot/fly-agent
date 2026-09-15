@@ -31,19 +31,22 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("[GitHub 项目地址](https://github.com/wyzs6666-bot/fly-agent)")
 
-# ==================== 主界面 ====================
-# 初始化 session_state
+# ==================== 初始化 ====================
 if "input_text" not in st.session_state:
     st.session_state.input_text = ""
 
+if "history" not in st.session_state:
+    st.session_state.history = []
+
+# ==================== 主界面 ====================
 col1, col2 = st.columns([3, 1])
 
 with col1:
+    # 注意：这里只用 key，不再同时用 value
     text = st.text_input(
         "输入一句话",
-        value=st.session_state.input_text,
         placeholder="例如：一只巨大的手要拍过来",
-        key="text_input_widget"
+        key="input_text"          # 关键：key 名称和 session_state 一致
     )
 
 with col2:
@@ -54,7 +57,7 @@ with col2:
         help="云端强烈建议使用 mock 或 auto"
     )
 
-# 示例按钮
+# ==================== 示例按钮 ====================
 st.markdown("**快速试试：**")
 examples = [
     "一只巨大的手要拍过来",
@@ -66,28 +69,21 @@ examples = [
 
 cols = st.columns(len(examples))
 for i, ex in enumerate(examples):
-    if cols[i].button(ex, use_container_width=True, key=f"example_btn_{i}"):
+    if cols[i].button(ex, use_container_width=True, key=f"ex_btn_{i}"):
         st.session_state.input_text = ex
         st.rerun()
 
-# 同步输入框的值
-if text != st.session_state.input_text:
-    st.session_state.input_text = text
-
-# 初始化历史
-if "history" not in st.session_state:
-    st.session_state.history = []
-
-# ==================== 运行 ====================
+# ==================== 运行按钮 ====================
 run_clicked = st.button("运行", type="primary", use_container_width=True)
 
 if run_clicked and st.session_state.input_text.strip():
     # 简单防刷
+    now = datetime.now()
     if "last_run" in st.session_state:
-        if (datetime.now() - st.session_state.last_run).total_seconds() < 1.5:
+        if (now - st.session_state.last_run).total_seconds() < 1.5:
             st.warning("操作太快，请稍等一下再试")
             st.stop()
-    st.session_state.last_run = datetime.now()
+    st.session_state.last_run = now
 
     current_text = st.session_state.input_text.strip()
 
@@ -106,7 +102,7 @@ if run_clicked and st.session_state.input_text.strip():
 
                 # 记录历史
                 st.session_state.history.insert(0, {
-                    "time": datetime.now().strftime("%H:%M:%S"),
+                    "time": now.strftime("%H:%M:%S"),
                     "input": current_text,
                     "mode": data.get("mode", brain),
                     "data": data
