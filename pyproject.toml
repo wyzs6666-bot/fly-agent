@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fly-agent"
+version = "0.1.0"
+description = "A small agent runtime around the frozen MaleCNS fruit-fly connectome."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "fly-agent contributors" }]
+keywords = ["agent", "connectome", "drosophila", "reservoir-computing"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# flybrain is optional so tests and interface development do not download ~260 MB of brain files.
+dependencies = ["numpy>=1.24"]
+
+[project.optional-dependencies]
+brain = ["flybrain>=0.1.0"]
+api = ["fastapi>=0.110", "uvicorn>=0.29"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+fly-agent = "fly_agent.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["fly_agent*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
