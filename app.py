@@ -161,20 +161,35 @@ if "fly_state" not in st.session_state:
 
 col1, col2 = st.columns([3, 1])
 with col1:
-    text = st.text_input("输入一句话", placeholder="例如：一只巨大的手要拍过来")
+col1, col2 = st.columns([3, 1])
+with col1:
+    text = st.text_input(
+        "输入一句话",
+        value=st.session_state.get("input_text", ""),
+        placeholder="例如：一只巨大的手要拍过来",
+        key="main_input"
+    )
 with col2:
     brain = st.selectbox("brain 模式", ["mock", "auto", "real"], index=0)
 
+# 快速试试
 st.markdown("**快速试试：**")
-examples = ["一只巨大的手要拍过来", "前面有甜的东西", "有危险接近", "你好呀", "the deadline is going to crash"]
+examples = [
+    "一只巨大的手要拍过来",
+    "前面有甜的东西",
+    "有危险接近",
+    "你好呀",
+    "the deadline is going to crash"
+]
+
 cols = st.columns(len(examples))
 for i, ex in enumerate(examples):
-    if cols[i].button(ex, use_container_width=True):
-        st.session_state["run_text"] = ex
+    if cols[i].button(ex, use_container_width=True, key=f"ex_{i}"):
+        st.session_state["input_text"] = ex
         st.rerun()
 
-run_text = st.session_state.get("run_text", text)
-
+# 运行按钮
+run_text = st.session_state.get("input_text", text)
 if st.button("运行", type="primary", use_container_width=True) and run_text.strip():
     with st.spinner("正在运行..."):
         try:
