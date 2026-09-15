@@ -32,20 +32,25 @@ with st.sidebar:
     st.markdown("[GitHub 项目地址](https://github.com/wyzs6666-bot/fly-agent)")
 
 # ==================== 主界面 ====================
+# 初始化 session_state
+if "input_text" not in st.session_state:
+    st.session_state.input_text = ""
+
 col1, col2 = st.columns([3, 1])
 
 with col1:
     text = st.text_input(
         "输入一句话",
+        value=st.session_state.input_text,
         placeholder="例如：一只巨大的手要拍过来",
-        key="input_text"
+        key="text_input_widget"
     )
 
 with col2:
     brain = st.selectbox(
         "brain 模式",
         options=["mock", "auto", "real"],
-        index=0,  # 默认 mock
+        index=0,
         help="云端强烈建议使用 mock 或 auto"
     )
 
@@ -61,9 +66,13 @@ examples = [
 
 cols = st.columns(len(examples))
 for i, ex in enumerate(examples):
-    if cols[i].button(ex, use_container_width=True):
-        st.session_state["input_text"] = ex
+    if cols[i].button(ex, use_container_width=True, key=f"example_btn_{i}"):
+        st.session_state.input_text = ex
         st.rerun()
+
+# 同步输入框的值
+if text != st.session_state.input_text:
+    st.session_state.input_text = text
 
 # 初始化历史
 if "history" not in st.session_state:
@@ -72,18 +81,20 @@ if "history" not in st.session_state:
 # ==================== 运行 ====================
 run_clicked = st.button("运行", type="primary", use_container_width=True)
 
-if run_clicked and text.strip():
+if run_clicked and st.session_state.input_text.strip():
     # 简单防刷
     if "last_run" in st.session_state:
-        if (datetime.now() - st.session_state.last_run).seconds < 2:
+        if (datetime.now() - st.session_state.last_run).total_seconds() < 1.5:
             st.warning("操作太快，请稍等一下再试")
             st.stop()
     st.session_state.last_run = datetime.now()
 
+    current_text = st.session_state.input_text.strip()
+
     with st.spinner("正在运行果蝇反射..."):
         try:
             result = subprocess.run(
-                ["fly-agent", "--brain", brain, text],
+                ["fly-agent", "--brain", brain, current_text],
                 capture_output=True,
                 text=True,
                 timeout=45
@@ -96,16 +107,15 @@ if run_clicked and text.strip():
                 # 记录历史
                 st.session_state.history.insert(0, {
                     "time": datetime.now().strftime("%H:%M:%S"),
-                    "input": text,
+                    "input": current_text,
                     "mode": data.get("mode", brain),
                     "data": data
                 })
-                st.session_state.history = st.session_state.history[:8]  # 只保留最近8条
+                st.session_state.history = st.session_state.history[:8]
 
                 # ===== 结果展示 =====
                 st.success("运行完成")
 
-                # 主要结果卡片
                 actions = data.get("actions", [])
                 felt = data.get("felt", "未知")
                 sense = data.get("sense", "nothing")
@@ -122,7 +132,6 @@ if run_clicked and text.strip():
                 with col_b:
                     st.markdown(f"**识别为：** `{sense}`")
 
-                # 详细证据
                 with st.expander("查看详细证据与神经元活动", expanded=False):
                     evidence = data.get("evidence", {})
                     st.json({
@@ -136,7 +145,7 @@ if run_clicked and text.strip():
                     st.json(data)
 
             except json.JSONDecodeError:
-                st.code(output)
+                st.code(output, language="text")
                 if "flybrain" in output.lower() or "real brain mode needs" in output.lower():
                     st.error("当前环境不支持 real 模式，请切换到 **mock** 或 **auto** 再试。")
 
@@ -150,7 +159,7 @@ if st.session_state.history:
     st.markdown("---")
     st.subheader("最近运行记录")
     for item in st.session_state.history:
-        with st.expander(f"{item['time']} | {item['input'][:20]}... | {item['mode']}"):
+        with st.expander(f"{item['time']} | {item['input'][:18]}... | {item['mode']}"):
             data = item["data"]
             st.write("**动作：**", ", ".join(data.get("actions", [])) or "noop")
             st.write("**感觉：**", data.get("felt", ""))
