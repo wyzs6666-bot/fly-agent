@@ -38,15 +38,18 @@ if "input_text" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
+# ==================== 回调函数 ====================
+def set_example(example: str):
+    st.session_state.input_text = example
+
 # ==================== 主界面 ====================
 col1, col2 = st.columns([3, 1])
 
 with col1:
-    # 注意：这里只用 key，不再同时用 value
     text = st.text_input(
         "输入一句话",
-        placeholder="例如：一只巨大的手要拍过来",
-        key="input_text"          # 关键：key 名称和 session_state 一致
+        key="input_text",
+        placeholder="例如：一只巨大的手要拍过来"
     )
 
 with col2:
@@ -69,15 +72,18 @@ examples = [
 
 cols = st.columns(len(examples))
 for i, ex in enumerate(examples):
-    if cols[i].button(ex, use_container_width=True, key=f"ex_btn_{i}"):
-        st.session_state.input_text = ex
-        st.rerun()
+    cols[i].button(
+        ex,
+        use_container_width=True,
+        key=f"ex_btn_{i}",
+        on_click=set_example,
+        args=(ex,)
+    )
 
 # ==================== 运行按钮 ====================
 run_clicked = st.button("运行", type="primary", use_container_width=True)
 
 if run_clicked and st.session_state.input_text.strip():
-    # 简单防刷
     now = datetime.now()
     if "last_run" in st.session_state:
         if (now - st.session_state.last_run).total_seconds() < 1.5:
@@ -100,7 +106,6 @@ if run_clicked and st.session_state.input_text.strip():
             try:
                 data = json.loads(output)
 
-                # 记录历史
                 st.session_state.history.insert(0, {
                     "time": now.strftime("%H:%M:%S"),
                     "input": current_text,
@@ -109,7 +114,6 @@ if run_clicked and st.session_state.input_text.strip():
                 })
                 st.session_state.history = st.session_state.history[:8]
 
-                # ===== 结果展示 =====
                 st.success("运行完成")
 
                 actions = data.get("actions", [])
