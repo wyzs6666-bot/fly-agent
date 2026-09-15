@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ================== 果蝇动画样式 ==================
+# ================== 果蝇动画 ==================
 st.markdown("""
 <style>
 #fly-container {
@@ -156,10 +156,11 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("[GitHub 项目地址](https://github.com/wyzs6666-bot/fly-agent)")
 
-if "fly_state" not in st.session_state:
-    st.session_state.fly_state = "idle"
+# 初始化
 if "input_text" not in st.session_state:
     st.session_state.input_text = ""
+if "fly_state" not in st.session_state:
+    st.session_state.fly_state = "idle"
 
 # ================== 主界面 ==================
 col1, col2 = st.columns([3, 1])
@@ -167,10 +168,10 @@ col1, col2 = st.columns([3, 1])
 with col1:
     text = st.text_input(
         "输入一句话",
-        value=st.session_state.get("input_text", ""),
-        placeholder="例如：一只巨大的手要拍过来",
-        key="main_input"
+        value=st.session_state.input_text,
+        placeholder="例如：一只巨大的手要拍过来"
     )
+    st.session_state.input_text = text
 
 with col2:
     brain = st.selectbox("brain 模式", ["mock", "auto", "real"], index=0)
@@ -187,18 +188,16 @@ examples = [
 
 cols = st.columns(len(examples))
 for i, ex in enumerate(examples):
-    if cols[i].button(ex, use_container_width=True, key=f"ex_{i}"):
-        st.session_state["input_text"] = ex
+    if cols[i].button(ex, use_container_width=True, key=f"btn_{i}"):
+        st.session_state.input_text = ex
         st.rerun()
 
 # 运行按钮
-run_text = st.session_state.get("input_text", text)
-
-if st.button("运行", type="primary", use_container_width=True) and run_text.strip():
+if st.button("运行", type="primary", use_container_width=True) and st.session_state.input_text.strip():
     with st.spinner("正在运行..."):
         try:
             result = subprocess.run(
-                ["fly-agent", "--brain", brain, run_text],
+                ["fly-agent", "--brain", brain, st.session_state.input_text],
                 capture_output=True,
                 text=True,
                 timeout=30
@@ -214,16 +213,16 @@ if st.button("运行", type="primary", use_container_width=True) and run_text.st
                 felt = data.get("felt", "")
 
                 # 切换果蝇状态
-                if sense == "threat" or "jumped" in str(actions) or "危险" in felt or "手" in run_text:
+                if sense == "threat" or "jumped" in str(actions) or "危险" in felt or "手" in st.session_state.input_text:
                     new_state = "escape"
                 elif sense == "taste" or "甜" in felt:
                     new_state = "approach"
-                elif sense == "mate" or "你好" in run_text:
+                elif sense == "mate" or "你好" in st.session_state.input_text:
                     new_state = "explore"
                 else:
                     new_state = "idle"
 
-                # 用 JS 切换动画
+                # 切换动画
                 st.markdown(f"""
                 <script>
                     const fly = window.parent.document.getElementById('fly');
