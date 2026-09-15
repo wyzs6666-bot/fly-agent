@@ -171,6 +171,7 @@ with col1:
     )
 with col2:
     brain = st.selectbox("brain 模式", ["mock", "auto", "real"], index=0)
+    brain = st.selectbox("brain 模式", ["mock", "auto", "real"], index=0)
 
 # 快速试试
 st.markdown("**快速试试：**")
