@@ -154,4 +154,4 @@ if st.session_state.history:
             data = item["data"]
             st.write("**动作：**", ", ".join(data.get("actions", [])) or "noop")
             st.write("**感觉：**", data.get("felt", ""))
-          st.json(data)
+            st.json(data)
