@@ -26,51 +26,107 @@ nonce = st.session_state.fly_nonce
 st.markdown(
     f"""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+html, body, [class*="css"] {{
+  font-family: "IBM Plex Sans", "Noto Sans SC", sans-serif;
+}}
+
 .stApp {{
   background:
-    radial-gradient(1200px 600px at 15% -10%, rgba(120, 190, 230, .35), transparent 55%),
-    radial-gradient(900px 500px at 90% 0%, rgba(180, 220, 170, .22), transparent 50%),
-    linear-gradient(180deg, #d7ecf8 0%, #eef6fb 42%, #f7f4ee 100%);
+    radial-gradient(900px 520px at 12% -8%, rgba(47,127,224,.28), transparent 58%),
+    radial-gradient(700px 420px at 92% 8%, rgba(143,211,255,.12), transparent 52%),
+    radial-gradient(800px 600px at 50% 110%, rgba(212,160,80,.10), transparent 55%),
+    linear-gradient(180deg, #0b1218 0%, #101920 46%, #16110c 100%);
+  color: #e8f0f4;
 }}
-[data-testid="stAppViewContainer"] {{
-  background: transparent;
-}}
+[data-testid="stAppViewContainer"],
 [data-testid="stHeader"] {{
   background: transparent;
 }}
+
+/* 复眼六边形 */
 .stApp::before {{
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: .18;
-  background-image:
-    linear-gradient(rgba(40,70,90,.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(40,70,90,.18) 1px, transparent 1px);
-  background-size: 28px 28px;
+  opacity: .22;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='98' viewBox='0 0 56 98'%3E%3Cpath d='M28 2 L54 17 V47 L28 62 L2 47 V17 Z' fill='none' stroke='%238fd3ff' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 56px 98px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
 }}
+
+/* 连接组光点 */
+.stApp::after {{
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(143,211,255,.55) 0 1.2px, transparent 1.8px),
+    radial-gradient(circle at 72% 18%, rgba(47,127,224,.5) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 40% 70%, rgba(143,211,255,.35) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 86% 64%, rgba(212,160,80,.4) 0 1.2px, transparent 1.8px);
+}}
+
 [data-testid="stSidebar"] {{
-  background: linear-gradient(180deg, #1c2a33 0%, #24343e 100%) !important;
+  background: linear-gradient(180deg, #0a1116 0%, #132028 100%) !important;
+  border-right: 1px solid rgba(143,211,255,.12);
 }}
 [data-testid="stSidebar"] * {{
-  color: #e8f0f4 !important;
+  color: #d7e6ee !important;
 }}
 [data-testid="stSidebar"] a {{
   color: #8fd3ff !important;
 }}
+
 .block-container {{
   position: relative;
   z-index: 1;
-  background: rgba(255,255,255,.62);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,.55);
-  border-radius: 18px;
-  padding-top: 1.4rem;
-  box-shadow: 0 12px 40px rgba(30,50,70,.08);
+  background:
+    linear-gradient(180deg, rgba(16,28,36,.86), rgba(12,20,26,.78));
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(143,211,255,.16);
+  border-radius: 22px;
+  padding-top: 1.2rem;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.35),
+    0 24px 60px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.06);
 }}
+
+h1, h2, h3, .stMarkdown, .stCaption, label, p {{
+  color: #e8f0f4 !important;
+}}
+.stCaption, [data-testid="stCaptionContainer"] {{
+  color: #9bb3c0 !important;
+}}
+
+.stTextInput input, .stSelectbox [data-baseweb="select"] > div {{
+  background: rgba(8,14,18,.72) !important;
+  color: #e8f0f4 !important;
+  border: 1px solid rgba(143,211,255,.22) !important;
+  border-radius: 12px !important;
+}}
+
 .stButton > button {{
-  border-radius: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(143,211,255,.18);
+  background: rgba(20,32,40,.7);
+  color: #e8f0f4;
+}}
+.stButton > button[kind="primary"] {{
+  background: linear-gradient(90deg, #1e5dad, #2f7fe0) !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(47,127,224,.35);
+}}
+
+div[data-testid="stAlert"] {{
+  border-radius: 12px;
 }}
 
 .sky {{
@@ -85,7 +141,7 @@ st.markdown(
   width: 160px;
   height: 160px;
   position: relative;
-  filter: drop-shadow(0 10px 12px rgba(0,0,0,.18));
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.45)) drop-shadow(0 0 18px rgba(47,127,224,.25));
 }}
 .fly .ab {{
   width: 36px; height: 58px;
@@ -121,6 +177,7 @@ st.markdown(
   background: radial-gradient(circle at 35% 30%, #8fd3ff, #2f7fe0 45%, #0b2a4a);
   border-radius: 50%;
   position: absolute; top: 7px;
+  box-shadow: 0 0 8px rgba(143,211,255,.7);
 }}
 .fly .eye.l {{ left: 3px; }}
 .fly .eye.r {{ right: 3px; }}
