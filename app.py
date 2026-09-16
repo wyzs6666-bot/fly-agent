@@ -382,3 +382,16 @@ elif err:
         st.warning("当前环境不支持 real 模式，请用 mock 或 auto")
 else:
     st.info("输入一句话后点击「运行」，或直接点上面的示例按钮。")
+st.markdown("---")
+st.markdown(
+    """
+    <div style="text-align:center;padding:8px 0 16px;">
+      <a href="https://x.com/BSC_FlyAgent" target="_blank" rel="noopener noreferrer"
+         style="font-size:28px;font-weight:800;color:inherit;text-decoration:none;">
+        𝕏
+
+      </a>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
