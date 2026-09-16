@@ -16,34 +16,51 @@ components.html(
     const doc = window.parent.document;
 
     const styleId = "x-link-style";
-    if (!doc.getElementById(styleId)) {
-      const style = doc.createElement("style");
+    let style = doc.getElementById(styleId);
+    if (!style) {
+      style = doc.createElement("style");
       style.id = styleId;
-      style.textContent = `
-        [data-testid="stHeader"] {
-          pointer-events: none !important;
-          background: transparent !important;
-        }
-        [data-testid="stToolbar"] {
-          pointer-events: auto !important;
-        }
-        .x-fixed-link {
-          position: fixed !important;
-          top: 18px !important;
-          right: 230px !important;
-          z-index: 2147483647 !important;
-          pointer-events: auto !important;
-          font-size: 20px !important;
-          font-weight: 800 !important;
-          line-height: 1 !important;
-          color: #e8f0f4 !important;
-          text-decoration: none !important;
-          font-family: sans-serif !important;
-          cursor: pointer !important;
-        }
-      `;
       doc.head.appendChild(style);
     }
+    style.textContent = `
+      [data-testid="stHeader"] {
+        pointer-events: none !important;
+        background: transparent !important;
+      }
+      [data-testid="stToolbar"] {
+        pointer-events: auto !important;
+      }
+      .x-fixed-link {
+        position: fixed !important;
+        top: 18px !important;
+        right: 230px !important;
+        z-index: 2147483647 !important;
+        pointer-events: auto !important;
+        font-size: 20px !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        color: #e8f0f4 !important;
+        text-decoration: none !important;
+        font-family: sans-serif !important;
+        cursor: pointer !important;
+      }
+      [data-testid="stSidebarCollapsedControl"],
+      [data-testid="collapsedControl"],
+      [data-testid="stExpandSidebarButton"] {
+        pointer-events: auto !important;
+        background: rgba(255,255,255,.22) !important;
+        border: 1px solid #ffffff !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 12px rgba(255,255,255,.4) !important;
+      }
+      [data-testid="stSidebarCollapsedControl"] svg,
+      [data-testid="collapsedControl"] svg,
+      [data-testid="stExpandSidebarButton"] svg {
+        fill: #ffffff !important;
+        stroke: #ffffff !important;
+        color: #ffffff !important;
+      }
+    `;
 
     let a = doc.querySelector(".x-fixed-link");
     if (!a) {
@@ -58,7 +75,8 @@ components.html(
 
     function openSidebar() {
       const btn = doc.querySelector('[data-testid="stSidebarCollapsedControl"]')
-        || doc.querySelector('[data-testid="collapsedControl"]');
+        || doc.querySelector('[data-testid="collapsedControl"]')
+        || doc.querySelector('[data-testid="stExpandSidebarButton"]');
       if (btn) btn.click();
     }
     openSidebar();
@@ -228,22 +246,6 @@ html, body, [class*="css"] {{
 }}
 [data-testid="stSidebar"] a {{
   color: #8fd3ff !important;
-}}
-
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="collapsedControl"],
-[data-testid="stBaseButton-headerNoPadding"] {{
-  background: rgba(255,255,255,.18) !important;
-  border: 1px solid rgba(255,255,255,.85) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 12px rgba(255,255,255,.35);
-}}
-[data-testid="stSidebarCollapsedControl"] svg,
-[data-testid="collapsedControl"] svg,
-[data-testid="stBaseButton-headerNoPadding"] svg {{
-  fill: #ffffff !important;
-  stroke: #ffffff !important;
-  color: #ffffff !important;
 }}
 
 .block-container {{
@@ -547,4 +549,3 @@ elif err:
         st.warning(t["real_warn"])
 else:
     st.info(t["hint"])
-   
