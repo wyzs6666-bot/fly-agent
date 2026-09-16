@@ -30,7 +30,7 @@ components.html(
         .x-fixed-link {
           position: fixed !important;
           top: 10px !important;
-          right: 168px !important;
+          right: 230px !important;
           z-index: 2147483647 !important;
           pointer-events: auto !important;
           font-size: 20px !important;
