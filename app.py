@@ -26,6 +26,53 @@ nonce = st.session_state.fly_nonce
 st.markdown(
     f"""
 <style>
+.stApp {{
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(120, 190, 230, .35), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgba(180, 220, 170, .22), transparent 50%),
+    linear-gradient(180deg, #d7ecf8 0%, #eef6fb 42%, #f7f4ee 100%);
+}}
+[data-testid="stAppViewContainer"] {{
+  background: transparent;
+}}
+[data-testid="stHeader"] {{
+  background: transparent;
+}}
+.stApp::before {{
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .18;
+  background-image:
+    linear-gradient(rgba(40,70,90,.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(40,70,90,.18) 1px, transparent 1px);
+  background-size: 28px 28px;
+}}
+[data-testid="stSidebar"] {{
+  background: linear-gradient(180deg, #1c2a33 0%, #24343e 100%) !important;
+}}
+[data-testid="stSidebar"] * {{
+  color: #e8f0f4 !important;
+}}
+[data-testid="stSidebar"] a {{
+  color: #8fd3ff !important;
+}}
+.block-container {{
+  position: relative;
+  z-index: 1;
+  background: rgba(255,255,255,.62);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.55);
+  border-radius: 18px;
+  padding-top: 1.4rem;
+  box-shadow: 0 12px 40px rgba(30,50,70,.08);
+}}
+.stButton > button {{
+  border-radius: 10px;
+}}
+
 .sky {{
   display: flex;
   justify-content: center;
