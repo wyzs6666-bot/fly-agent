@@ -153,6 +153,18 @@ This is a reservoir / reflex prototype, not mind uploading, and not a general LL
         ],
     },
 }
+
+def _set_lang():
+    st.session_state.lang = "zh" if st.session_state.lang_radio == "中文" else "en"
+
+st.sidebar.radio(
+    "Language / 语言",
+    ["中文", "English"],
+    index=0 if st.session_state.lang == "zh" else 1,
+    horizontal=True,
+    key="lang_radio",
+    on_change=_set_lang,
+)
 t = T[st.session_state.lang]
 
 fly_state = st.session_state.fly_state
@@ -213,6 +225,21 @@ html, body, [class*="css"] {{
   color: #d7e6ee !important;
 }}
 [data-testid="stSidebar"] a {{
+  color: #8fd3ff !important;
+}}
+
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"],
+[data-testid="stBaseButton-headerNoPadding"] {{
+  background: rgba(47,127,224,.35) !important;
+  border: 1px solid rgba(143,211,255,.65) !important;
+  color: #8fd3ff !important;
+}}
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="collapsedControl"] svg,
+[data-testid="stBaseButton-headerNoPadding"] svg {{
+  fill: #8fd3ff !important;
+  stroke: #8fd3ff !important;
   color: #8fd3ff !important;
 }}
 
@@ -409,15 +436,6 @@ st.title("🪰 Fly Agent")
 st.caption(t["caption"])
 
 with st.sidebar:
-    lang_label = st.radio(
-        "Language / 语言",
-        ["中文", "English"],
-        index=0 if st.session_state.lang == "zh" else 1,
-        horizontal=True,
-    )
-    st.session_state.lang = "zh" if lang_label == "中文" else "en"
-    t = T[st.session_state.lang]
-
     st.header(t["sidebar_title"])
     st.markdown(t["sidebar_body"])
     st.markdown("---")
@@ -517,4 +535,3 @@ elif err:
         st.warning(t["real_warn"])
 else:
     st.info(t["hint"])
-
