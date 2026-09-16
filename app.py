@@ -547,5 +547,4 @@ elif err:
         st.warning(t["real_warn"])
 else:
     st.info(t["hint"])
-else:
     st.info(t["hint"])
