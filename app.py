@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import subprocess
 import json
 
@@ -9,28 +10,54 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.markdown(
+components.html(
     """
-    <style>
-    .x-fixed {
-      position: fixed;
-      top: 0.55rem;
-      right: 8.8rem;
-      z-index: 999999;
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1;
-      text-decoration: none;
-      color: #e8f0f4 !important;
+    <script>
+    const doc = window.parent.document;
+
+    const styleId = "x-link-style";
+    if (!doc.getElementById(styleId)) {
+      const style = doc.createElement("style");
+      style.id = styleId;
+      style.textContent = `
+        [data-testid="stHeader"] {
+          pointer-events: none !important;
+          background: transparent !important;
+        }
+        [data-testid="stToolbar"] {
+          pointer-events: auto !important;
+        }
+        .x-fixed-link {
+          position: fixed !important;
+          top: 10px !important;
+          right: 168px !important;
+          z-index: 2147483647 !important;
+          pointer-events: auto !important;
+          font-size: 20px !important;
+          font-weight: 800 !important;
+          line-height: 1 !important;
+          color: #e8f0f4 !important;
+          text-decoration: none !important;
+          font-family: sans-serif !important;
+          cursor: pointer !important;
+        }
+      `;
+      doc.head.appendChild(style);
     }
-    .x-fixed:hover { opacity: 0.75; }
-    @media (max-width: 768px) {
-      .x-fixed { right: 4.2rem; }
+
+    let a = doc.querySelector(".x-fixed-link");
+    if (!a) {
+      a = doc.createElement("a");
+      a.className = "x-fixed-link";
+      doc.body.appendChild(a);
     }
-    </style>
-    <a class="x-fixed" href="https://x.com/BSC_FlyAgent" target="_blank" rel="noopener noreferrer">𝕏</a>
+    a.href = "https://x.com/BSC_FlyAgent";
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = "𝕏";
+    </script>
     """,
-    unsafe_allow_html=True,
+    height=0,
 )
 
 if "input_text" not in st.session_state:
@@ -315,6 +342,7 @@ with st.sidebar:
 """)
     st.markdown("---")
     st.markdown("[GitHub 项目地址](https://github.com/wyzs6666-bot/fly-agent)")
+    st.markdown("[𝕏 @BSC_FlyAgent](https://x.com/BSC_FlyAgent)")
 
 col1, col2 = st.columns([3, 1])
 with col1:
