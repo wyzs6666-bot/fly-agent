@@ -70,6 +70,90 @@ if "last_result" not in st.session_state:
     st.session_state.last_result = None
 if "last_error" not in st.session_state:
     st.session_state.last_error = None
+if "lang" not in st.session_state:
+    st.session_state.lang = "zh"
+
+T = {
+    "zh": {
+        "caption": "用果蝇连接组做简单反射反应（原型演示）",
+        "sidebar_title": "使用说明",
+        "sidebar_body": """
+**这是什么？**  
+把一句话映射成果蝇的感官刺激，然后看连接组触发什么反射动作。
+
+**模式说明**  
+- **mock**：假脑，速度快，推荐使用  
+- **auto**：优先尝试真实脑，失败自动降级  
+- **real**：真实 MaleCNS 连接组（云端通常不可用）
+
+**边界提醒**  
+这是 reservoir / reflex 原型，不是意识上传，也不是通用 LLM Agent。
+""",
+        "github": "GitHub 项目地址",
+        "input": "输入一句话",
+        "placeholder": "例如：一只巨大的手要拍过来",
+        "brain": "brain 模式",
+        "try": "快速试试：",
+        "run": "运行",
+        "running": "正在运行...",
+        "done": "运行完成",
+        "reaction": "果蝇的反应",
+        "felt": "感觉到：",
+        "sense": "识别为：",
+        "evidence": "查看详细证据与神经元活动",
+        "raw": "完整原始结果",
+        "fail": "运行失败：",
+        "real_warn": "当前环境不支持 real 模式，请用 mock 或 auto",
+        "hint": "输入一句话后点击「运行」，或直接点上面的示例按钮。",
+        "examples": [
+            "一只巨大的手要拍过来",
+            "前面有甜的东西",
+            "有危险接近",
+            "你好呀",
+            "the deadline is going to crash",
+        ],
+    },
+    "en": {
+        "caption": "Simple reflex demo using the fly connectome",
+        "sidebar_title": "How to use",
+        "sidebar_body": """
+**What is this?**  
+Map a sentence to fly sensory input, then see which reflex the connectome fires.
+
+**Modes**  
+- **mock**: fake brain, fast, recommended  
+- **auto**: try the real brain first, fall back if it fails  
+- **real**: real MaleCNS connectome (usually unavailable in the cloud)
+
+**Limits**  
+This is a reservoir / reflex prototype, not mind uploading, and not a general LLM agent.
+""",
+        "github": "GitHub repo",
+        "input": "Enter a sentence",
+        "placeholder": "e.g. A giant hand is about to slap",
+        "brain": "brain mode",
+        "try": "Try these:",
+        "run": "Run",
+        "running": "Running...",
+        "done": "Done",
+        "reaction": "Fly response",
+        "felt": "Felt:",
+        "sense": "Classified as:",
+        "evidence": "Evidence and neuron activity",
+        "raw": "Full raw result",
+        "fail": "Failed: ",
+        "real_warn": "Real mode is not supported here. Use mock or auto.",
+        "hint": "Type a sentence and click Run, or use an example button above.",
+        "examples": [
+            "A giant hand is about to slap",
+            "Something sweet ahead",
+            "Danger approaching",
+            "Hello there",
+            "the deadline is going to crash",
+        ],
+    },
+}
+t = T[st.session_state.lang]
 
 fly_state = st.session_state.fly_state
 nonce = st.session_state.fly_nonce
@@ -96,7 +180,6 @@ html, body, [class*="css"] {{
   background: transparent;
 }}
 
-/* 复眼六边形 */
 .stApp::before {{
   content: "";
   position: fixed;
@@ -109,7 +192,6 @@ html, body, [class*="css"] {{
   mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
 }}
 
-/* 连接组光点 */
 .stApp::after {{
   content: "";
   position: fixed;
@@ -324,45 +406,37 @@ div[data-testid="stAlert"] {{
 )
 
 st.title("🪰 Fly Agent")
-st.caption("用果蝇连接组做简单反射反应（原型演示）")
+st.caption(t["caption"])
 
 with st.sidebar:
-    st.header("使用说明")
-    st.markdown("""
-**这是什么？**  
-把一句话映射成果蝇的感官刺激，然后看连接组触发什么反射动作。
+    lang_label = st.radio(
+        "Language / 语言",
+        ["中文", "English"],
+        index=0 if st.session_state.lang == "zh" else 1,
+        horizontal=True,
+    )
+    st.session_state.lang = "zh" if lang_label == "中文" else "en"
+    t = T[st.session_state.lang]
 
-**模式说明**  
-- **mock**：假脑，速度快，推荐使用  
-- **auto**：优先尝试真实脑，失败自动降级  
-- **real**：真实 MaleCNS 连接组（云端通常不可用）
-
-**边界提醒**  
-这是 reservoir / reflex 原型，不是意识上传，也不是通用 LLM Agent。
-""")
+    st.header(t["sidebar_title"])
+    st.markdown(t["sidebar_body"])
     st.markdown("---")
-    st.markdown("[GitHub 项目地址](https://github.com/wyzs6666-bot/fly-agent)")
+    st.markdown(f"[{t['github']}](https://github.com/wyzs6666-bot/fly-agent)")
     st.markdown("[𝕏 @BSC_FlyAgent](https://x.com/BSC_FlyAgent)")
 
 col1, col2 = st.columns([3, 1])
 with col1:
     text = st.text_input(
-        "输入一句话",
+        t["input"],
         value=st.session_state.input_text,
-        placeholder="例如：一只巨大的手要拍过来",
+        placeholder=t["placeholder"],
     )
     st.session_state.input_text = text
 with col2:
-    brain = st.selectbox("brain 模式", ["mock", "auto", "real"], index=0)
+    brain = st.selectbox(t["brain"], ["mock", "auto", "real"], index=0)
 
-st.markdown("**快速试试：**")
-examples = [
-    "一只巨大的手要拍过来",
-    "前面有甜的东西",
-    "有危险接近",
-    "你好呀",
-    "the deadline is going to crash",
-]
+st.markdown(f"**{t['try']}**")
+examples = t["examples"]
 cols = st.columns(len(examples))
 for i, ex in enumerate(examples):
     if cols[i].button(ex, use_container_width=True, key=f"btn_{i}"):
@@ -373,18 +447,27 @@ def pick_fly_state(data, raw):
     sense = str(data.get("sense", "nothing"))
     actions = data.get("actions", []) or []
     felt = str(data.get("felt", ""))
-    if sense == "threat" or "jumped" in str(actions) or "危险" in felt or "手" in raw:
+    raw_l = raw.lower()
+    if (
+        sense == "threat"
+        or "jumped" in str(actions)
+        or "危险" in felt
+        or "手" in raw
+        or "danger" in raw_l
+        or "slap" in raw_l
+        or "hand" in raw_l
+    ):
         return "escape"
-    if sense == "taste" or "甜" in felt:
+    if sense == "taste" or "甜" in felt or "sweet" in raw_l:
         return "approach"
-    if sense == "mate" or "你好" in raw:
+    if sense == "mate" or "你好" in raw or "hello" in raw_l:
         return "explore"
     if not actions or actions == ["noop"]:
         return "noop"
     return "idle"
 
-if st.button("运行", type="primary", use_container_width=True) and st.session_state.input_text.strip():
-    with st.spinner("正在运行..."):
+if st.button(t["run"], type="primary", use_container_width=True) and st.session_state.input_text.strip():
+    with st.spinner(t["running"]):
         try:
             result = subprocess.run(
                 ["fly-agent", "--brain", brain, st.session_state.input_text],
@@ -408,7 +491,7 @@ if st.button("运行", type="primary", use_container_width=True) and st.session_
                 st.rerun()
         except Exception as e:
             st.session_state.last_result = None
-            st.session_state.last_error = f"运行失败：{e}"
+            st.session_state.last_error = f"{t['fail']}{e}"
             st.session_state.fly_state = "noop"
             st.session_state.fly_nonce += 1
             st.rerun()
@@ -417,20 +500,22 @@ data = st.session_state.last_result
 err = st.session_state.last_error
 
 if data:
-    st.success("运行完成")
-    st.subheader("果蝇的反应")
+    st.success(t["done"])
+    st.subheader(t["reaction"])
     actions = data.get("actions", []) or []
     st.info(", ".join(actions) if actions else "noop")
     c1, c2 = st.columns(2)
-    c1.markdown(f"**感觉到：** {data.get('felt', '')}")
-    c2.markdown(f"**识别为：** `{data.get('sense', '')}`")
-    with st.expander("查看详细证据与神经元活动"):
+    c1.markdown(f"**{t['felt']}** {data.get('felt', '')}")
+    c2.markdown(f"**{t['sense']}** `{data.get('sense', '')}`")
+    with st.expander(t["evidence"]):
         st.json(data.get("evidence", {}))
-    with st.expander("完整原始结果"):
+    with st.expander(t["raw"]):
         st.json(data)
 elif err:
     st.code(err)
     if "flybrain" in str(err).lower():
-        st.warning("当前环境不支持 real 模式，请用 mock 或 auto")
+        st.warning(t["real_warn"])
+else:
+    st.info(t["hint"])
 else:
     st.info("输入一句话后点击「运行」，或直接点上面的示例按钮。")
