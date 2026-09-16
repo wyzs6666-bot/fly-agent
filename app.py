@@ -9,6 +9,30 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+st.markdown(
+    """
+    <style>
+    .x-fixed {
+      position: fixed;
+      top: 0.55rem;
+      right: 8.8rem;
+      z-index: 999999;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+      text-decoration: none;
+      color: #e8f0f4 !important;
+    }
+    .x-fixed:hover { opacity: 0.75; }
+    @media (max-width: 768px) {
+      .x-fixed { right: 4.2rem; }
+    }
+    </style>
+    <a class="x-fixed" href="https://x.com/BSC_FlyAgent" target="_blank" rel="noopener noreferrer">𝕏</a>
+    """,
+    unsafe_allow_html=True,
+)
+
 if "input_text" not in st.session_state:
     st.session_state.input_text = ""
 if "fly_state" not in st.session_state:
@@ -382,16 +406,3 @@ elif err:
         st.warning("当前环境不支持 real 模式，请用 mock 或 auto")
 else:
     st.info("输入一句话后点击「运行」，或直接点上面的示例按钮。")
-st.markdown("---")
-st.markdown(
-    """
-    <div style="text-align:center;padding:8px 0 16px;">
-      <a href="https://x.com/BSC_FlyAgent" target="_blank" rel="noopener noreferrer"
-         style="font-size:28px;font-weight:800;color:inherit;text-decoration:none;">
-        𝕏
-
-      </a>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
