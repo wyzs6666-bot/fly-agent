@@ -56,11 +56,15 @@ components.html(
     a.rel = "noopener noreferrer";
     a.textContent = "𝕏";
 
-    setTimeout(() => {
-      const collapsed = doc.querySelector('[data-testid="stSidebarCollapsedControl"]')
+    function openSidebar() {
+      const btn = doc.querySelector('[data-testid="stSidebarCollapsedControl"]')
         || doc.querySelector('[data-testid="collapsedControl"]');
-      if (collapsed) collapsed.click();
-    }, 80);
+      if (btn) btn.click();
+    }
+    openSidebar();
+    setTimeout(openSidebar, 200);
+    setTimeout(openSidebar, 600);
+    setTimeout(openSidebar, 1200);
     </script>
     """,
     height=0,
@@ -163,14 +167,6 @@ This is a reservoir / reflex prototype, not mind uploading, and not a general LL
 def _set_lang():
     st.session_state.lang = "zh" if st.session_state.lang_radio == "中文" else "en"
 
-st.sidebar.radio(
-    "Language / 语言",
-    ["中文", "English"],
-    index=0 if st.session_state.lang == "zh" else 1,
-    horizontal=True,
-    key="lang_radio",
-    on_change=_set_lang,
-)
 t = T[st.session_state.lang]
 
 fly_state = st.session_state.fly_state
@@ -440,6 +436,15 @@ div[data-testid="stAlert"] {{
 
 st.title("🪰 Fly Agent")
 st.caption(t["caption"])
+st.radio(
+    "Language / 语言",
+    ["中文", "English"],
+    index=0 if st.session_state.lang == "zh" else 1,
+    horizontal=True,
+    key="lang_radio",
+    on_change=_set_lang,
+)
+t = T[st.session_state.lang]
 
 with st.sidebar:
     st.header(t["sidebar_title"])
