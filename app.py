@@ -517,5 +517,4 @@ elif err:
         st.warning(t["real_warn"])
 else:
     st.info(t["hint"])
-else:
-    st.info("输入一句话后点击「运行」，或直接点上面的示例按钮。")
+
