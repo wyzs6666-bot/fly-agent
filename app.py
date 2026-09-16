@@ -55,6 +55,12 @@ components.html(
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.textContent = "𝕏";
+
+    setTimeout(() => {
+      const collapsed = doc.querySelector('[data-testid="stSidebarCollapsedControl"]')
+        || doc.querySelector('[data-testid="collapsedControl"]');
+      if (collapsed) collapsed.click();
+    }, 80);
     </script>
     """,
     height=0,
