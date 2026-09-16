@@ -233,16 +233,17 @@ html, body, [class*="css"] {{
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="collapsedControl"],
 [data-testid="stBaseButton-headerNoPadding"] {{
-  background: rgba(47,127,224,.35) !important;
-  border: 1px solid rgba(143,211,255,.65) !important;
-  color: #8fd3ff !important;
+  background: rgba(255,255,255,.18) !important;
+  border: 1px solid rgba(255,255,255,.85) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(255,255,255,.35);
 }}
 [data-testid="stSidebarCollapsedControl"] svg,
 [data-testid="collapsedControl"] svg,
 [data-testid="stBaseButton-headerNoPadding"] svg {{
-  fill: #8fd3ff !important;
-  stroke: #8fd3ff !important;
-  color: #8fd3ff !important;
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+  color: #ffffff !important;
 }}
 
 .block-container {{
@@ -544,5 +545,7 @@ elif err:
     st.code(err)
     if "flybrain" in str(err).lower():
         st.warning(t["real_warn"])
+else:
+    st.info(t["hint"])
 else:
     st.info(t["hint"])
