@@ -88,6 +88,9 @@ components.html(
     height=0,
 )
 
+CA = "0xb6f61aab7a9f5c2bcf8dd2c87bdfeb7225547777"
+BSCSCAN = f"https://bscscan.com/token/{CA}"
+
 if "input_text" not in st.session_state:
     st.session_state.input_text = ""
 if "fly_state" not in st.session_state:
@@ -118,6 +121,8 @@ T = {
 这是 reservoir / reflex 原型，不是意识上传，也不是通用 LLM Agent。
 """,
         "github": "GitHub 项目地址",
+        "ca_label": "合约地址 CA (BSC)",
+        "ca_link": "在 BscScan 查看",
         "input": "输入一句话",
         "placeholder": "例如：一只巨大的手要拍过来",
         "brain": "brain 模式",
@@ -157,6 +162,8 @@ Map a sentence to fly sensory input, then see which reflex the connectome fires.
 This is a reservoir / reflex prototype, not mind uploading, and not a general LLM agent.
 """,
         "github": "GitHub repo",
+        "ca_label": "Contract Address CA (BSC)",
+        "ca_link": "View on BscScan",
         "input": "Enter a sentence",
         "placeholder": "e.g. A giant hand is about to slap",
         "brain": "brain mode",
@@ -439,6 +446,7 @@ div[data-testid="stAlert"] {{
 
 st.title("🪰 Fly Agent")
 st.caption(t["caption"])
+st.caption(f"CA: `{CA}`")
 st.radio(
     "Language / 语言",
     ["中文", "English"],
@@ -452,6 +460,10 @@ t = T[st.session_state.lang]
 with st.sidebar:
     st.header(t["sidebar_title"])
     st.markdown(t["sidebar_body"])
+    st.markdown("---")
+    st.markdown(f"**{t['ca_label']}**")
+    st.code(CA, language=None)
+    st.markdown(f"[{t['ca_link']}]({BSCSCAN})")
     st.markdown("---")
     st.markdown(f"[{t['github']}](https://github.com/wyzs6666-bot/fly-agent)")
     st.markdown("[𝕏 @BSC_FlyAgent](https://x.com/BSC_FlyAgent)")
